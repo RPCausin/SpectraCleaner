@@ -1,3 +1,3 @@
 # SpectraCleaner
 
-Use this to visualize spectra and remove them
+Use this program to visualize and remove spectra.
