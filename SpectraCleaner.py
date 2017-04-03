@@ -28,7 +28,6 @@ class SpectraCleaning(QWidget, OWComponent):
         self.view.setRootIndex(self.fsmdl.index(expanduser("~")))
         self.view.setColumnWidth(0, 300)
         self.view.selectionModel().currentChanged.connect(self.get_selected_data)
-        self.connect(self, SIGNAL("delPressed"), self.delete_file)
 
         self.pen = pg.mkPen(color=QColor(Qt.black), width=2)
         self.plt = pg.PlotWidget(title="Select a file", pen=self.pen, background="w", \
@@ -40,9 +39,8 @@ class SpectraCleaning(QWidget, OWComponent):
         self.layout().addWidget(self.plt)
 
     def keyPressEvent(self, event):
-        if type(event) == QKeyEvent:
-            if event.key() == Qt.Key_Delete:
-                self.emit(SIGNAL('delPressed'))
+        if event.key() == Qt.Key_Delete:
+            self.delete_file()
 
     def get_selected_data(self, current):
         self.filename = self.fsmdl.filePath(current)
