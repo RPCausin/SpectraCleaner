@@ -1,13 +1,14 @@
-import sys
-import os
+from sys import argv as sys_argv
+from sys import exit as sys_exit
+from os import remove as os_remove
+from os.path import expanduser
 
 from Orange.widgets.widget import OWWidget, OWComponent
 from Orange.widgets.settings import DomainContextHandler, SettingProvider
 
-from os.path import expanduser
-from AnyQt.QtCore import *
-from AnyQt.QtGui import *
-from AnyQt.QtWidgets import *
+from AnyQt.QtCore import Qt
+from AnyQt.QtGui import QColor
+from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication
 
 import opusFC
 import pyqtgraph as pg
@@ -30,8 +31,8 @@ class SpectraCleaning(QWidget, OWComponent):
         self.view.selectionModel().currentChanged.connect(self.get_selected_data)
 
         self.pen = pg.mkPen(color=QColor(Qt.black), width=2)
-        self.plt = pg.PlotWidget(title="Select a file", pen=self.pen, background="w", \
-                                 bottom="Wavenumber (cm⁻¹)",left="Absorbance (a.u.)")
+        self.plt = pg.PlotWidget(title="Select a file", pen=self.pen, background='w',
+                                 bottom="Wavenumber (cm⁻¹)", left="Absorbance (a.u.)")
         self.plt.invertX()
 
         self.setLayout(layout)
@@ -60,7 +61,7 @@ class SpectraCleaning(QWidget, OWComponent):
         ret = self.message_box()
         if ret == QMessageBox.Yes:
             try:
-                os.remove(fn)
+                os_remove(fn)
                 QMessageBox.information(self, "File removed", "File \"{}\" was successfully removed.".format(fn))
             except FileNotFoundError:
                 QMessageBox.critical(self, "Error", "File {} not found.".format(fn))
@@ -102,7 +103,7 @@ class OWSpectraCleaner(OWWidget):
 
 def main(argv=None):
     if argv is None:
-        argv = sys.argv
+        argv = sys_argv
     argv = list(argv)
     app = QApplication(argv)
     w = OWSpectraCleaner()
@@ -119,5 +120,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
-
+    sys_exit(main())
