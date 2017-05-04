@@ -5,7 +5,7 @@ from os.path import expanduser
 
 from AnyQt.QtCore import Qt
 from AnyQt.QtGui import QColor
-from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication
+from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication, QDesktopWidget
 
 import opusFC
 import pyqtgraph as pg
@@ -24,6 +24,8 @@ class SpectraCleaning(QWidget):
         self.view.setModel(self.fsmdl)
         self.view.setRootIndex(self.fsmdl.index(expanduser("~")))
         self.view.setColumnWidth(0, 300)
+        self.view.hideColumn(2)  # Hide "Type" column
+        self.view.hideColumn(3)  # Hide "Date" column
         self.view.selectionModel().currentChanged.connect(self.get_selected_data)
 
         self.pen = pg.mkPen(color=QColor(Qt.black), width=2)
@@ -83,7 +85,15 @@ def main(argv=None):
     argv = list(argv)
     app = QApplication(argv)
     w = SpectraCleaning()
-    w.resize(900, 800)
+
+    width, height = 900, 800
+
+    # Center the app to the desktop
+    wid = QDesktopWidget()
+    screen_width = wid.screen().width()
+    screen_height = wid.screen().height()
+    w.setGeometry((screen_width / 2.0) - (width / 2.0), (screen_height / 2.0) - (height / 2.0), width, height)
+
     w.show()
 
     rval = app.exec_()
