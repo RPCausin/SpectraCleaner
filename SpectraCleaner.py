@@ -3,9 +3,6 @@ from sys import exit as sys_exit
 from os import remove as os_remove
 from os.path import expanduser
 
-from Orange.widgets.widget import OWWidget, OWComponent
-from Orange.widgets.settings import DomainContextHandler, SettingProvider
-
 from AnyQt.QtCore import Qt
 from AnyQt.QtGui import QColor
 from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication
@@ -14,10 +11,9 @@ import opusFC
 import pyqtgraph as pg
 
 
-class SpectraCleaning(QWidget, OWComponent):
+class SpectraCleaning(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self)
-        OWComponent.__init__(self, parent)
 
         self.filename = ""
 
@@ -81,38 +77,16 @@ class SpectraCleaning(QWidget, OWComponent):
         return msgBox.exec_()
 
 
-class OWSpectraCleaner(OWWidget):
-    name = "Spectra Cleaner"
-    description = "Visualize plot of selected file corresponding to one spectrum"
-    icon = "icons/DataSamplerA.svg"
-
-    inputs = []
-    outputs = []
-
-    settingsHandler = DomainContextHandler()
-    spectracleaning = SettingProvider(SpectraCleaning)
-
-    def __init__(self):
-        super().__init__()
-
-        self.controlArea.hide()
-        self.spectracleaning = SpectraCleaning(self)
-        self.mainArea.layout().addWidget(self.spectracleaning)
-        self.resize(900, 800)
-
-
 def main(argv=None):
     if argv is None:
         argv = sys_argv
     argv = list(argv)
     app = QApplication(argv)
-    w = OWSpectraCleaner()
+    w = SpectraCleaning()
+    w.resize(900, 800)
     w.show()
 
-    w.handleNewSignals()
-
     rval = app.exec_()
-    w.handleNewSignals()
     w.deleteLater()
     del w
     app.processEvents()
