@@ -3,9 +3,9 @@ from sys import exit as sys_exit
 from os import remove as os_remove
 from os.path import expanduser
 
-from AnyQt.QtCore import Qt
-from AnyQt.QtGui import QColor
-from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication, QDesktopWidget
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QColor, QWidget, QVBoxLayout, QFileSystemModel, QTreeView, QMessageBox, QApplication, \
+    QDesktopWidget
 
 import opusFC
 import pyqtgraph as pg
