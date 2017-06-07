@@ -5,26 +5,26 @@ from os.path import expanduser
 
 from AnyQt.QtCore import Qt
 from AnyQt.QtGui import QColor    
-from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView, \
-    QMessageBox, QApplication, QDesktopWidget
+from AnyQt.QtWidgets import QWidget, QVBoxLayout, QFileSystemModel, QTreeView,    QMessageBox, QApplication, \
+    QDesktopWidget, QMainWindow, qApp, QAction, QWidgetAction, QCheckBox
 
 import opusFC
 import pyqtgraph as pg
 
 
-class SpectraCleaning(QWidget):
+class SpectraCleaner(QWidget):
     def __init__(self, parent=None):
-        QWidget.__init__(self)
+        QWidget.__init__(self, parent)
 
         self.msgBox = None
         self.filename = ""
 
-        layout = QVBoxLayout()
+        self.mylayout = QVBoxLayout()
         self.fsmdl = QFileSystemModel()
-        self.fsmdl.setRootPath(expanduser("~"))
+        self.fsmdl.setRootPath(expanduser(''))
         self.view = QTreeView()
         self.view.setModel(self.fsmdl)
-        self.view.setRootIndex(self.fsmdl.index(expanduser("~")))
+        self.view.setRootIndex(self.fsmdl.index(expanduser('~')))
         self.view.setColumnWidth(0, 300)
         self.view.hideColumn(2)  # Hide "Type" column
         self.view.hideColumn(3)  # Hide "Date" column
@@ -35,7 +35,7 @@ class SpectraCleaning(QWidget):
                                  bottom="Wavenumber (cm⁻¹)", left="Absorbance (a.u.)")
         self.plt.invertX()
 
-        self.setLayout(layout)
+        self.setLayout(self.mylayout)
         self.layout().addWidget(self.view)
         self.layout().addWidget(self.plt)
 
@@ -81,12 +81,39 @@ class SpectraCleaning(QWidget):
         return self.msgBox.exec_()
 
 
+class MainWindow(QMainWindow):
+    def __init__(self):
+        QMainWindow.__init__(self)
+        self.SpectraCleanerWidget = SpectraCleaner(self)
+        self.setCentralWidget(self.SpectraCleanerWidget)
+
+        self.bar = self.menuBar()
+        self.menu = self.bar.addMenu("Options")
+
+        self.rootindex_checkbox = QCheckBox("Show top level", self.menu)
+        self.rootindex_action = QWidgetAction(self.menu)
+        self.rootindex_action.setDefaultWidget(self.rootindex_checkbox)
+        self.rootindex_checkbox.stateChanged.connect(self.top_RootIndex)
+        self.menu.addAction(self.rootindex_action)
+
+        self.exit_action = QAction('Exit', self)
+        self.exit_action.triggered.connect(qApp.quit)
+        self.menu.addAction(self.exit_action)
+
+    def top_RootIndex(self):
+        if self.rootindex_checkbox.isChecked():
+            self.SpectraCleanerWidget.view.setRootIndex(self.SpectraCleanerWidget.fsmdl.index(expanduser('')))
+        else:
+            self.SpectraCleanerWidget.view.setRootIndex(self.SpectraCleanerWidget.fsmdl.index(expanduser('~')))
+
+
+
 def main(argv=None):
     if argv is None:
         argv = sys_argv
     argv = list(argv)
     app = QApplication(argv)
-    w = SpectraCleaning()
+    w = MainWindow()
 
     width, height = 900, 800
 
